@@ -19,11 +19,33 @@ const run =async()=>{
         await client.connect();
         console.log('db connected');
         const projectCollection = client.db('my-portfolio').collection('projects');
+        const serviceCollection = client.db('my-portfolio').collection('services');
 
         app.get('/project-info',async(req,res)=>{
             const result=await projectCollection.find().toArray();
             res.send(result);
         })
+
+        app.get('/project-info/:type',async(req,res)=>{
+            const type=req.params.type;
+            const filter= {type:type};
+            const result=await projectCollection.find(filter).toArray()
+            res.send(result);
+            
+            
+        })
+
+        app.get('/project/:id',async(req,res)=>{
+            const id=req.params.id;
+            const result=await projectCollection.findOne({_id:ObjectId(id)})
+            res.send(result);
+        })
+
+        app.get('/services',async(req,res)=>{
+            const result=await serviceCollection.find().toArray();
+            res.send(result);
+        })
+
 
         app.post('/project-info',async(req,res)=>{
             const data=req.body;
@@ -31,10 +53,10 @@ const run =async()=>{
             res.send(result);
         })
 
-        app.get('/project-info/:id',async(req,res)=>{
-            const id=req.params.id;
-            const result=await projectCollection.findOne({_id:ObjectId(id)})
-            res.send(result)
+        app.post ('/service',async(req,res)=>{
+            const data =req.body;
+            const result=await serviceCollection.insertOne(data);
+            res.send(result);
         })
 
 
